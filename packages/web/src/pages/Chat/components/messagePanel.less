@@ -1,0 +1,59 @@
+.message-pane-container {
+  display: flex;
+  justify-content: center;
+  overflow: auto;
+  ul {
+    width: 80%;
+  }
+}
+
+.message-item {
+  margin-top: 10px;
+  .message-item-header {
+    font-size: 10px;
+    &.other {
+      text-align: left;
+      color: blue;
+    }
+
+    &.me {
+      text-align: right;
+      color: green;
+    }
+  }
+
+  .message-item-content {
+    font-size: 20px;
+    padding: 10px;
+    display: flex;
+
+
+    &.me {
+      justify-content: flex-end;
+    }
+
+    &.other {
+      justify-content: flex-start;
+    }
+
+    .text {
+      padding: 10px;
+      font-family: monospace;
+      background: #fafafa;
+      border-radius: 5px;
+      width: 50%;
+    }
+  }
+}
+
+.join-leave {
+  text-align: center;
+
+  .join {
+    color: #28C76F;
+  }
+
+  .leave {
+    color: #e70a0a;
+  }
+}

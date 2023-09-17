@@ -1,0 +1,46 @@
+.group-list-item {
+  border-radius: 5px;
+  height: 10%;
+  width: 100%;
+}
+
+.group-list-item-content {
+  display: flex;
+  font-family: monospace;
+  .group-list-item-title {
+    height: 100%;
+    flex: 7;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    font-size: 15px;
+    padding: 5px;
+  }
+
+  .unread-num-container {
+    flex: 3;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .unread-num {
+      font-size: 15px;
+      color: white;
+      background: #fc3131;
+      border-radius: 50%;
+      padding: 0 5px 0 5px
+    }
+  }
+}
+
+.group-list-container {
+  border-right: 1px solid #f1f1f1;
+}
+
+.group-list-item__active {
+  background: #f6f6f6;
+}
+
+.group-list-item:hover {
+  background: #fcfcfc;
+}

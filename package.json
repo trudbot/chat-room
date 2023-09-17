@@ -1,0 +1,19 @@
+{
+  "name": "online-chat-rooms",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "web": "npm run -w chat-room-web dev",
+    "server": "npm run -w chat-room-server start:dev"
+  },
+  "workspaces": [
+    "./packages/*"
+  ],
+  "author": "trudbot",
+  "license": "MIT",
+  "devDependencies": {
+    "less": "^4.2.0"
+  }
+}
