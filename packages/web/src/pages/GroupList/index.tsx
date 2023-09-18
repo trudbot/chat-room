@@ -1,13 +1,13 @@
 import './index.less'
-import {useContext, useEffect, useRef, useState} from "react";
-import {Group} from "chat-room-types";
-import {getUserGroup} from "../../apis/group.ts";
-import {UserInfoContext} from "../../stores/userInfo/userInfoProvider.tsx";
-import {SwitchGroup} from "../../stores/groupMessage/groupMessageAction.ts";
-import {GroupMessageContext} from "../../stores/groupMessage/groupMessageProvider.tsx";
-import {io, Socket} from "socket.io-client";
+import { useContext, useEffect, useRef, useReducer, Dispatch } from "react";
+import { getUserGroup } from "../../apis/group.ts";
+import { UserInfoContext } from "../../stores/userInfo/userInfoProvider.tsx";
+import { SwitchGroup } from "../../stores/groupMessage/groupMessageAction.ts";
+import { GroupMessageContext } from "../../stores/groupMessage/groupMessageProvider.tsx";
+import { io, Socket } from "socket.io-client";
+import { groupDataAction, groupDataReducer, groupDataState } from './groupDataReducer.ts';
+import { GroupData } from './groupDataReducer.ts';
 
-type GroupData = Group & { unread: number };
 
 function createUnreadMessageConnection(query: { userId: number }) {
     return io(import.meta.env.VITE_WS_UNREAD_URL, {
@@ -16,7 +16,7 @@ function createUnreadMessageConnection(query: { userId: number }) {
     });
 }
 
-function GroupItem({info}: { info: GroupData }) {
+function GroupItem({ info }: { info: GroupData }) {
     return (
         <div className='fill-up group-list-item-content'>
             <span className={'group-list-item-title'}>
@@ -29,7 +29,7 @@ function GroupItem({info}: { info: GroupData }) {
     )
 }
 
-function Groups({groups, setGroups, active, setActive}: { groups: GroupData[], setGroups: (groups: GroupData[]) => void, active: number, setActive: (active: number) => void}) {
+function Groups({ groupState, groupDispatch }: { groupState: groupDataState, groupDispatch: Dispatch<groupDataAction> }) {
     // 加载store
     const userInfoStore = useContext(UserInfoContext);
     const groupMessageStore = useContext(GroupMessageContext);
@@ -40,15 +40,11 @@ function Groups({groups, setGroups, active, setActive}: { groups: GroupData[], s
     // 3. 加载第一个群聊的消息
     useEffect(() => {
         console.log(`加载群聊数据: ${userInfoStore.state.id}`)
-        getUserGroup({id: userInfoStore.state.id}).then(res => {
-            setGroups(res.data.map(e => {
-                return {
-                    ...e,
-                    unread: 0
-                }
-            }));
-            setActive(res.data[0].group_id);
-            console.log(`初始化群聊数据时设置 ${res.data[0].group_id}, ${active}`)
+        getUserGroup({ id: userInfoStore.state.id }).then(res => {
+            groupDispatch({
+                type: "setData",
+                value: res.data
+            });
             SwitchGroup(res.data[0], groupMessageStore.dispatch);
         }).catch(e => {
             console.log(e);
@@ -56,30 +52,24 @@ function Groups({groups, setGroups, active, setActive}: { groups: GroupData[], s
     }, [userInfoStore.state]);
 
     // 渲染群组数组
-    const groupList = groups.map((e) => {
+    const groupList = groupState.groups.map((e) => {
 
         // 点击群聊进行切换时
         // 设置群聊为active
         // 加载群聊数据
         // 将此群的未读消息数量清空
         function click() {
-            setActive(e.group_id);
             console.log(`当前active群组被设置为${e.group_id}`)
             SwitchGroup(e, groupMessageStore.dispatch);
-            setGroups(groups.map(g => {
-                if (g.group_id === e.group_id) {
-                    return {
-                        ...g,
-                        unread: 0
-                    }
-                }
-                return g;
-            }))
+            groupDispatch({
+                type: "setActive",
+                value: e.group_id
+            });
         }
 
-        return <div className={`group-list-item ${e.group_id === active ? 'group-list-item__active' : ''}`}
-                    key={e.group_id} onClick={click}>
-            <GroupItem info={e}/>
+        return <div className={`group-list-item ${e.group_id === groupState.active ? 'group-list-item__active' : ''}`}
+            key={e.group_id} onClick={click}>
+            <GroupItem info={e} />
         </div>
     });
 
@@ -91,32 +81,15 @@ function Groups({groups, setGroups, active, setActive}: { groups: GroupData[], s
 }
 
 export default function GroupList() {
-    // 当前打开的群聊
-    const [activeGroup, setActive] = useState<number>(0);
-    // 群聊数据
-    const [groups, setGroups] = useState<GroupData[]>([]);
+
+    const [state, dispatch] = useReducer(groupDataReducer, {
+        groups: [],
+        active: 0
+    });
+
 
     // 加载store
     const userInfoStore = useContext(UserInfoContext);
-
-    //
-    function addUnreadMessage(groupId: number) {
-        console.log(`收到remind消息, groupId: ${groupId}, activeId: ${activeGroup}`);
-        if (groupId === activeGroup) {
-            console.log("消息为当前群组, 不更新提示")
-            return;
-        }
-        console.log(`消息不为当前群组， 更新提示, 更新前的groups为${JSON.stringify(groups)}`)
-        setGroups(groups.map(e => {
-            if (e.group_id === groupId) {
-                return {
-                    ...e,
-                    unread: 5
-                }
-            }
-            return e;
-        }));
-    }
 
     // // websocket连接
     const remind = useRef<Socket | null>(null);
@@ -124,9 +97,12 @@ export default function GroupList() {
 
 
     useEffect(() => {
-        remind.current = createUnreadMessageConnection({userId: userInfoStore.state.id});
+        remind.current = createUnreadMessageConnection({ userId: userInfoStore.state.id });
         remind.current?.on('remind', (groupId: number) => {
-            addUnreadMessage(groupId);
+            dispatch({
+                type: 'addUnread',
+                value: groupId
+            })
         });
         return () => {
             remind.current?.disconnect();
@@ -136,7 +112,7 @@ export default function GroupList() {
 
     return (
         <div className={'fill-up'}>
-            <Groups groups={groups} setGroups={setGroups} active={activeGroup} setActive={setActive}/>
+            <Groups groupState={state} groupDispatch={dispatch} />
         </div>
     )
 }

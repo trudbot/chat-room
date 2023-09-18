@@ -1,9 +1,9 @@
-import {io, Socket} from "socket.io-client";
-import {ToServer_Message} from "chat-room-types";
-import {formatDateToYYYYMMDDHHMMSS} from "../../../utils/formatDate.ts";
+import { io, Socket } from "socket.io-client";
+import { ToServer_Message } from "chat-room-types";
+import { formatDateToYYYYMMDDHHMMSS } from "../../../utils/formatDate.ts";
 
 // 和聊天服务器交互的核心逻辑
-export function useChatConnection(query: {userId: number, groupId: number}) {
+export function useChatConnection(query: { userId: number, groupId: number }) {
     const chatSocket: Socket = io(import.meta.env.VITE_WS_CHAT_URL, {
         query: query,
         transports: ['websocket']
@@ -17,6 +17,6 @@ export function useChatConnection(query: {userId: number, groupId: number}) {
         }
         chatSocket.emit('message', data);
     }
-    return {chatSocket, send}
+    return { chatSocket, send }
 }
 

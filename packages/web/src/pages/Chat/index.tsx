@@ -1,15 +1,15 @@
 import './index.less'
-import {Input} from "antd";
-import React, {useContext, useEffect, useRef, useState} from "react";
-import {UserInfoContext} from "../../stores/userInfo/userInfoProvider.tsx";
-import {GroupMessageContext} from "../../stores/groupMessage/groupMessageProvider.tsx";
-import {MessagePanel} from "./components/messagePanel.tsx";
-import {useChatConnection} from "./hooks/chatConnection.ts";
-import {Socket} from "socket.io-client";
-import {ToClient_Join, ToClient_Leave, ToClient_Message} from "chat-room-types";
-import {MType} from "../../stores/groupMessage/groupMessageReducer.ts";
+import { Input } from "antd";
+import React, { useContext, useEffect, useRef, useState } from "react";
+import { UserInfoContext } from "../../stores/userInfo/userInfoProvider.tsx";
+import { GroupMessageContext } from "../../stores/groupMessage/groupMessageProvider.tsx";
+import { MessagePanel } from "./components/messagePanel.tsx";
+import { useChatConnection } from "./hooks/chatConnection.ts";
+import { Socket } from "socket.io-client";
+import { ToClient_Join, ToClient_Leave, ToClient_Message } from "chat-room-types";
+import { MType } from "../../stores/groupMessage/groupMessageReducer.ts";
 
-const {TextArea} = Input;
+const { TextArea } = Input;
 
 export default function Chat() {
     const userInfoStore = useContext(UserInfoContext);
@@ -17,11 +17,13 @@ export default function Chat() {
 
     const [inputText, setInputText] = useState<string>('');
 
-    const connection = useRef<null | {chatSocket: Socket; send: (msg: string, date: Date) => void}>(null);
+    const connection = useRef<null | { chatSocket: Socket; send: (msg: string, date: Date) => void }>(null);
 
     useEffect(() => {
-        console.log('连接')
-        connection.current = useChatConnection({groupId: messageStore.state.group.group_id, userId: userInfoStore.state.id});
+
+        connection.current = useChatConnection({ groupId: messageStore.state.group.group_id, userId: userInfoStore.state.id });
+
+        // chat 连接收到事件时的逻辑
 
         connection.current.chatSocket.on('message', (msg: ToClient_Message) => {
             messageStore.dispatch({
@@ -84,12 +86,12 @@ export default function Chat() {
                 {messageStore.state.group.group_name}
             </div>
             <div className={'message-pane'}>
-                <MessagePanel/>
+                <MessagePanel />
             </div>
             <div className='input-container'>
                 <div className='input-area'>
                     <TextArea onKeyDown={inputKeyDown} rows={4} value={inputText}
-                              onChange={(e) => setInputText(e.target.value)}></TextArea>
+                        onChange={(e) => setInputText(e.target.value)}></TextArea>
                 </div>
             </div>
         </div>
