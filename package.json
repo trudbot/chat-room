@@ -6,7 +6,10 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "web": "npm run -w chat-room-web dev",
-    "server": "npm run -w chat-room-server start:dev"
+    "server": "npm run -w chat-room-server start:dev",
+    "build:types": "npx tsc -p package/common-types",
+    "build:web": "npm run -w chat-room-web build",
+    "build:server": "npm run -w chat-room-server build"
   },
   "workspaces": [
     "./packages/*"
