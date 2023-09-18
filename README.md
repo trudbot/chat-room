@@ -8,6 +8,7 @@
 ```shell
 git clone git@github.com:trudbot/chat-room.git
 cd chat-room
+npm install
 npm run build:types
 npm run server
 + npm run web

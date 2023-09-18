@@ -59,7 +59,6 @@ function Groups({ groupState, groupDispatch }: { groupState: groupDataState, gro
         // 加载群聊数据
         // 将此群的未读消息数量清空
         function click() {
-            console.log(`当前active群组被设置为${e.group_id}`)
             SwitchGroup(e, groupMessageStore.dispatch);
             groupDispatch({
                 type: "setActive",
@@ -93,8 +92,6 @@ export default function GroupList() {
 
     // // websocket连接
     const remind = useRef<Socket | null>(null);
-
-
 
     useEffect(() => {
         remind.current = createUnreadMessageConnection({ userId: userInfoStore.state.id });
