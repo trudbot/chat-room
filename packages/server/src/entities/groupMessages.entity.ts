@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class GroupMessages {
@@ -6,7 +6,7 @@ export class GroupMessages {
     id: number;
 
     @Column()
-    group_id: number
+    group_id: number;
 
     @Column()
     sender_id: number;

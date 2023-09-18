@@ -1,5 +1,6 @@
 import { Controller, Get, Query } from "@nestjs/common";
 import { GroupMessageService } from "./groupMessage.service";
+import { log } from "console";
 
 @Controller()
 export class GroupMessageController {
@@ -7,7 +8,6 @@ export class GroupMessageController {
     @Get('/messages')
     async getGroupMessage(@Query() query: { groupId: number }) {
         const res = await this.group_messageService.queryGroupMessages(query.groupId);
-        console.log(res);
         return res;
     }
 }
