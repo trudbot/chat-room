@@ -1,19 +1,20 @@
-import {ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer} from '@nestjs/websockets';
-import {Server, Socket} from 'socket.io'
-import {UserService} from "../user/user.service";
-import {ChatService} from "./chat.service";
-import {Group_messageService} from "../group_message/group_message.service";
-import {ToServer_Message, ToClient_Message, ToClient_Join, ToClient_Leave} from "chat-room-types";
-import {UnreadGateway} from "../unread/unread.gateway";
+import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
+import { Server, Socket } from 'socket.io'
+import { UserService } from "../user/user.service";
+import { ChatService } from "./chat.service";
+import { GroupMessageService } from "../group_message/groupMessage.service";
+import { ToServer_Message, ToClient_Message, ToClient_Join, ToClient_Leave } from "chat-room-types";
+import { UnreadGateway } from "../unread/unread.gateway";
 
 // chat模块的websocket网关
 // 主要做的的群组消息转发
 @WebSocketGateway({
     cors: {
         origin: '*',
-        methods: ['GET', 'POST']
+        methods: ['GET', 'POST'],
     },
-    namespace: 'chat'
+    namespace: 'chat',
+    // transports: ['websocket']
 })
 export class ChatGateway {
     @WebSocketServer()
@@ -22,12 +23,12 @@ export class ChatGateway {
     constructor(
         private readonly userService: UserService,
         private readonly chatService: ChatService,
-        private readonly group_messageService: Group_messageService,
+        private readonly group_messageService: GroupMessageService,
         private readonly unreadGateway: UnreadGateway,
-    ) {}
+    ) { }
 
     // 建立连接时， 根据groupId参数加入对应群组
-    async handleConnection(client: Socket, ...args: any[]) {
+    async handleConnection(client: Socket) {
         const groupId = client.handshake.query.groupId;
         const userId = client.handshake.query.userId;
         if (groupId && typeof groupId === "string" && typeof userId === "string" && userId) {
@@ -41,11 +42,13 @@ export class ChatGateway {
     }
 
     async handleDisconnect(client: Socket) {
-        if (client.handshake.query.userId && typeof client.handshake.query.userId === "string")
-        this.server.to(this.chatService.getRoom(client)).emit('leave', {
-            actor: await this.userService.findUserById(parseInt(client.handshake.query.userId))
-        })
-        this.chatService.leaveRoom(client);
+        if (client.handshake.query.userId && typeof client.handshake.query.userId === "string") {
+            const msg: ToClient_Leave = {
+                actor: await this.userService.findUserById(parseInt(client.handshake.query.userId))
+            };
+            this.server.to(this.chatService.getRoom(client)).emit('leave', msg);
+            this.chatService.leaveRoom(client);
+        }
     }
 
     // 群聊消息事件， 向群组中所有连接转发

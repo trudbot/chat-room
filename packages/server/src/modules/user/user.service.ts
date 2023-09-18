@@ -2,7 +2,7 @@ import {Injectable, UnauthorizedException} from "@nestjs/common";
 import {InjectRepository} from "@nestjs/typeorm";
 import {User} from "../../entities/user.entity";
 import {Repository} from "typeorm";
-import {User_group} from "../../entities/user_group.entity";
+import {UserGroup} from "../../entities/userGroup.entity";
 import {Group} from "../../entities/group.entity";
 import {UserInfo} from "chat-room-types";
 import {Group as GroupType} from 'chat-room-types'
@@ -12,8 +12,8 @@ export class UserService {
     constructor(
         @InjectRepository(User)
         private readonly userRepository: Repository<User>,
-        @InjectRepository(User_group)
-        private readonly user_groupRepository: Repository<User_group>,
+        @InjectRepository(UserGroup)
+        private readonly user_groupRepository: Repository<UserGroup>,
         @InjectRepository(Group)
         private readonly groupRepository: Repository<Group>
     ) {}

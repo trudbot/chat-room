@@ -1,13 +1,19 @@
 import { Column, Entity, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
-export class User {
+export class GroupMessages {
     @PrimaryGeneratedColumn()
     id: number;
 
     @Column()
-    name: string;
+    group_id: number
 
     @Column()
-    password: string;
+    sender_id: number;
+
+    @Column()
+    message: string;
+
+    @Column({ type: 'datetime' })
+    sending_time: Date;
 }

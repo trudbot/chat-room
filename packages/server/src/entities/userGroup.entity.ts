@@ -1,19 +1,13 @@
 import {Column, Entity, PrimaryColumn, PrimaryGeneratedColumn} from "typeorm";
 
 @Entity()
-export class Group_messages{
+export class UserGroup {
     @PrimaryGeneratedColumn()
     id: number;
 
     @Column()
-    group_id: number
+    user_id: number;
 
     @Column()
-    sender_id: number;
-
-    @Column()
-    message: string
-
-    @Column()
-    sending_time: string
+    group_id: number;
 }

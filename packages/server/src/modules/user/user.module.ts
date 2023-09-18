@@ -4,10 +4,10 @@ import {User} from "../../entities/user.entity";
 import {UserService} from "./user.service";
 import {UserController} from "./user.controller";
 import {Group} from "../../entities/group.entity";
-import {User_group} from "../../entities/user_group.entity";
+import {UserGroup} from "../../entities/userGroup.entity";
 
 @Module({
-    imports: [TypeOrmModule.forFeature([User, Group, User_group])],
+    imports: [TypeOrmModule.forFeature([User, Group, UserGroup])],
     providers: [User, UserService],
     controllers: [UserController],
     exports: [UserService]

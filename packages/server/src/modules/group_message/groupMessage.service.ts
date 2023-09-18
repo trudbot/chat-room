@@ -1,28 +1,28 @@
-import {Injectable} from "@nestjs/common";
-import {InjectRepository} from "@nestjs/typeorm";
-import {Group_messages} from "../../entities/group_messages.entity";
-import {Repository} from "typeorm";
-import {User} from "../../entities/user.entity";
-import {UserService} from "../user/user.service";
+import { Injectable } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { GroupMessages } from "../../entities/groupMessages.entity";
+import { Repository } from "typeorm";
+import { User } from "../../entities/user.entity";
+import { UserService } from "../user/user.service";
 
 @Injectable()
-export class Group_messageService {
-    @InjectRepository(Group_messages)
-    private readonly group_messageRepository: Repository<Group_messages>;
+export class GroupMessageService {
+    @InjectRepository(GroupMessages)
+    private readonly group_messageRepository: Repository<GroupMessages>;
 
-    constructor(private readonly userService: UserService) {}
+    constructor(private readonly userService: UserService) { }
 
     async addMessage(data) {
         await this.group_messageRepository.createQueryBuilder()
             .insert()
-            .into(Group_messages)
+            .into(GroupMessages)
             .values([data])
             .execute();
     }
 
     async queryGroupMessages(groupId: number) {
         return (await this.group_messageRepository.createQueryBuilder('msg')
-            .where('msg.group_id = :id', {id: groupId})
+            .where('msg.group_id = :id', { id: groupId })
             .leftJoinAndSelect(User, 'user', `user.id = msg.sender_id`)
             .getRawMany())
             .map(e => {
